@@ -24,6 +24,7 @@ import (
 	elb "github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing"
 	elbv2 "github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/aws-sdk-go-v2/service/organizations"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3control"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
@@ -295,6 +296,24 @@ func IAMClient(ctx context.Context, d *plugin.QueryData) (*iam.Client, error) {
 	}
 
 	svc := iam.NewFromConfig(*cfg)
+	d.ConnectionManager.Cache.Set(serviceCacheKey, svc)
+
+	return svc, nil
+}
+
+// OrganizationClient returns the client for AWS Organization service
+func OrganizationClient(ctx context.Context, d *plugin.QueryData) (*organizations.Client, error) {
+	// have we already created and cached the client?
+	serviceCacheKey := "Organization"
+	if cachedData, ok := d.ConnectionManager.Cache.Get(serviceCacheKey); ok {
+		return cachedData.(*organizations.Client), nil
+	}
+	// so it was not in cache - create service
+	cfg, err := getSessionV2(ctx, d, GetDefaultAwsRegion(d))
+	if err != nil {
+		return nil, err
+	}
+	svc := organizations.NewFromConfig(*cfg)
 	d.ConnectionManager.Cache.Set(serviceCacheKey, svc)
 
 	return svc, nil

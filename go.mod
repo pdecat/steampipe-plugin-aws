@@ -18,6 +18,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing v1.14.12
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.12
 	github.com/aws/aws-sdk-go-v2/service/iam v1.18.9
+	github.com/aws/aws-sdk-go-v2/service/organizations v1.16.8
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.1
 	github.com/aws/aws-sdk-go-v2/service/s3control v1.21.9
 	github.com/aws/aws-sdk-go-v2/service/sns v1.17.9

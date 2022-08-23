@@ -73,7 +73,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/neptune"
 	"github.com/aws/aws-sdk-go/service/networkfirewall"
 	"github.com/aws/aws-sdk-go/service/opensearchservice"
-	"github.com/aws/aws-sdk-go/service/organizations"
 	"github.com/aws/aws-sdk-go/service/pinpoint"
 	"github.com/aws/aws-sdk-go/service/pricing"
 	"github.com/aws/aws-sdk-go/service/ram"
@@ -1315,24 +1314,6 @@ func OpenSearchService(ctx context.Context, d *plugin.QueryData) (*opensearchser
 		return nil, err
 	}
 	svc := opensearchservice.New(sess)
-	d.ConnectionManager.Cache.Set(serviceCacheKey, svc)
-
-	return svc, nil
-}
-
-// OrganizationService returns the service connection for AWS Organization service
-func OrganizationService(ctx context.Context, d *plugin.QueryData) (*organizations.Organizations, error) {
-	// have we already created and cached the service?
-	serviceCacheKey := "Organization"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(serviceCacheKey); ok {
-		return cachedData.(*organizations.Organizations), nil
-	}
-	// so it was not in cache - create service
-	sess, err := getSession(ctx, d, GetDefaultAwsRegion(d))
-	if err != nil {
-		return nil, err
-	}
-	svc := organizations.New(sess)
 	d.ConnectionManager.Cache.Set(serviceCacheKey, svc)
 
 	return svc, nil
