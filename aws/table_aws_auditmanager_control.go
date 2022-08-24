@@ -142,9 +142,9 @@ func listAuditManagerControls(ctx context.Context, d *plugin.QueryData, _ *plugi
 		return nil, err
 	}
 
-	maxItems := int32(1000)
-	parms := &auditmanager.ListControlsInput{
-		ControlType: types.ControlType("Standard"),
+	maxItems := int32(100)
+	params := &auditmanager.ListControlsInput{
+		ControlType: types.ControlTypeStandard,
 	}
 
 	// Reduce the basic request limit down if the user has only requested a small number of rows
@@ -159,15 +159,46 @@ func listAuditManagerControls(ctx context.Context, d *plugin.QueryData, _ *plugi
 		}
 	}
 
-	parms.MaxResults = &maxItems
+	params.MaxResults = &maxItems
 
-	paginator := auditmanager.NewListControlsPaginator(svc, parms, func(o *auditmanager.ListControlsPaginatorOptions) {
+	paginator := auditmanager.NewListControlsPaginator(svc, params, func(o *auditmanager.ListControlsPaginatorOptions) {
 		o.Limit = maxItems
 		o.StopOnDuplicateToken = true
 	})
 
+	// List standard controls
 	for paginator.HasMorePages() {
 		output, err := paginator.NextPage(ctx)
+		if err != nil {
+			// User with Admin access gets the error as ‘AccessDeniedException: Please complete AWS Audit Manager setup from home page to enable this action in this account’
+			// for the regions where the  Audit Manager setup is not complete, this suppresses the value from the regions where the setup is completed.
+			if strings.Contains(err.Error(), "Please complete AWS Audit Manager setup") {
+				return nil, nil
+			}
+			plugin.Logger(ctx).Error("aws_auditmanager_control.listAuditManagerControls", "api_error", err)
+			return nil, err
+		}
+
+		for _, items := range output.ControlMetadataList {
+			d.StreamListItem(ctx, items)
+
+			// Context may get cancelled due to manual cancellation or if the limit has been reached
+			if d.QueryStatus.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
+		}
+	}
+
+	// List custom controls
+	params.ControlType = types.ControlTypeCustom
+	paginatorCustom := auditmanager.NewListControlsPaginator(svc, params, func(o *auditmanager.ListControlsPaginatorOptions) {
+		o.Limit = maxItems
+		o.StopOnDuplicateToken = true
+	})
+
+	// List standard controls
+	for paginatorCustom.HasMorePages() {
+		output, err := paginatorCustom.NextPage(ctx)
 		if err != nil {
 			// User with Admin access gets the error as ‘AccessDeniedException: Please complete AWS Audit Manager setup from home page to enable this action in this account’
 			// for the regions where the  Audit Manager setup is not complete, this suppresses the value from the regions where the setup is completed.
