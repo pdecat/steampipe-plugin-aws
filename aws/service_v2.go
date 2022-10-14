@@ -76,6 +76,7 @@ import (
 	accessanalyzerEndpoint "github.com/aws/aws-sdk-go/service/accessanalyzer"
 	acmEndpoint "github.com/aws/aws-sdk-go/service/acm"
 	apigatewayEndpoint "github.com/aws/aws-sdk-go/service/apigateway"
+	apigatewayv2Endpoint "github.com/aws/aws-sdk-go/service/apigatewayv2"
 	fsxEndpoint "github.com/aws/aws-sdk-go/service/fsx"
 	lambdaEndpoint "github.com/aws/aws-sdk-go/service/lambda"
 )
@@ -135,9 +136,12 @@ func APIGatewayClient(ctx context.Context, d *plugin.QueryData) (*apigateway.Cli
 }
 
 func APIGatewayV2Client(ctx context.Context, d *plugin.QueryData) (*apigatewayv2.Client, error) {
-	cfg, err := getClientForQueryRegion(ctx, d)
+	cfg, err := getClientForQuerySupportedRegion(ctx, d, apigatewayv2Endpoint.EndpointsID)
 	if err != nil {
 		return nil, err
+	}
+	if cfg == nil {
+		return nil, nil
 	}
 	return apigatewayv2.NewFromConfig(*cfg), nil
 }
