@@ -116,6 +116,10 @@ func listAccessAnalyzers(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 		plugin.Logger(ctx).Error("aws_accessanalyzer_analyzer.listAccessAnalyzers", "client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// The maximum number for MaxResults parameter is not defined by the API
 	// We have set the MaxResults to 1000 based on our test
@@ -181,6 +185,10 @@ func getAccessAnalyzer(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 		plugin.Logger(ctx).Error("aws_accessanalyzer_analyzer.getAccessAnalyzer", "client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// Build the params
 	params := &accessanalyzer.GetAnalyzerInput{
@@ -205,6 +213,10 @@ func listAccessAnalyzerFindings(ctx context.Context, d *plugin.QueryData, h *plu
 	if err != nil {
 		plugin.Logger(ctx).Error("aws_accessanalyzer_analyzer.listAccessAnalyzerFindings", "client_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	var findings []types.FindingSummary

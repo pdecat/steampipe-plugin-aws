@@ -73,6 +73,7 @@ import (
 	"github.com/turbot/go-kit/helpers"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
 
+	accessanalyzerEndpoint "github.com/aws/aws-sdk-go/service/accessanalyzer"
 	fsxEndpoint "github.com/aws/aws-sdk-go/service/fsx"
 	lambdaEndpoint "github.com/aws/aws-sdk-go/service/lambda"
 )
@@ -88,9 +89,12 @@ func noOpToken() error { return nil }
 
 // AccessAnalyzerClient returns the service connection for AWS IAM Access Analyzer service
 func AccessAnalyzerClient(ctx context.Context, d *plugin.QueryData) (*accessanalyzer.Client, error) {
-	cfg, err := getClientForQueryRegion(ctx, d)
+	cfg, err := getClientForQuerySupportedRegion(ctx, d, accessanalyzerEndpoint.EndpointsID)
 	if err != nil {
 		return nil, err
+	}
+	if cfg == nil {
+		return nil, nil
 	}
 	return accessanalyzer.NewFromConfig(*cfg), nil
 }
