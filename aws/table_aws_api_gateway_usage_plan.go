@@ -98,6 +98,10 @@ func listUsagePlans(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		logger.Error("aws_api_gateway_usage_plan.listUsagePlans", "service_client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// Limiting the results
 	maxLimit := int32(500)
@@ -151,6 +155,10 @@ func getUsagePlan(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 	if err != nil {
 		plugin.Logger(ctx).Error("aws_api_gateway_rest_api.getUsagePlan", "service_cllient_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	id := d.KeyColumnQuals["id"].GetStringValue()

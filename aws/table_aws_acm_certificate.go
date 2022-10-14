@@ -226,6 +226,10 @@ func listAwsAcmCertificates(ctx context.Context, d *plugin.QueryData, _ *plugin.
 		logger.Error("listAwsAcmCertificates", "connection error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// Limiting the results
 	maxLimit := int32(1000)
@@ -288,6 +292,10 @@ func getAwsAcmCertificateAttributes(ctx context.Context, d *plugin.QueryData, h 
 	if err != nil {
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	var arn string
 	if h.Item != nil {
@@ -317,6 +325,10 @@ func getAwsAcmCertificateProperties(ctx context.Context, d *plugin.QueryData, h 
 		plugin.Logger(ctx).Error("aws_acm_certificate.getAwsAcmCertificateProperties", "service_client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	detail, err := svc.GetCertificate(ctx, &acm.GetCertificateInput{
 		CertificateArn: item.CertificateArn,
@@ -337,6 +349,10 @@ func listTagsForAcmCertificate(ctx context.Context, d *plugin.QueryData, h *plug
 	if err != nil {
 		plugin.Logger(ctx).Error("aws_acm_certificate.listTagsForAcmCertificate", "service_client_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	// Build param

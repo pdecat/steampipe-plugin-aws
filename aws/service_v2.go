@@ -74,6 +74,8 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
 
 	accessanalyzerEndpoint "github.com/aws/aws-sdk-go/service/accessanalyzer"
+	acmEndpoint "github.com/aws/aws-sdk-go/service/acm"
+	apigatewayEndpoint "github.com/aws/aws-sdk-go/service/apigateway"
 	fsxEndpoint "github.com/aws/aws-sdk-go/service/fsx"
 	lambdaEndpoint "github.com/aws/aws-sdk-go/service/lambda"
 )
@@ -111,17 +113,23 @@ func AccountClient(ctx context.Context, d *plugin.QueryData) (*account.Client, e
 }
 
 func ACMClient(ctx context.Context, d *plugin.QueryData) (*acm.Client, error) {
-	cfg, err := getClientForQueryRegion(ctx, d)
+	cfg, err := getClientForQuerySupportedRegion(ctx, d, acmEndpoint.EndpointsID)
 	if err != nil {
 		return nil, err
+	}
+	if cfg == nil {
+		return nil, nil
 	}
 	return acm.NewFromConfig(*cfg), nil
 }
 
 func APIGatewayClient(ctx context.Context, d *plugin.QueryData) (*apigateway.Client, error) {
-	cfg, err := getClientForQueryRegion(ctx, d)
+	cfg, err := getClientForQuerySupportedRegion(ctx, d, apigatewayEndpoint.EndpointsID)
 	if err != nil {
 		return nil, err
+	}
+	if cfg == nil {
+		return nil, nil
 	}
 	return apigateway.NewFromConfig(*cfg), nil
 }

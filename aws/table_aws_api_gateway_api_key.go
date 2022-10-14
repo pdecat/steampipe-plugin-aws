@@ -121,6 +121,10 @@ func listAPIKeys(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		plugin.Logger(ctx).Error("aws_api_gateway_api_key.listAPIKeys", "service_client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// Limiting the results
 	maxLimit := int32(500)
@@ -180,6 +184,10 @@ func getAPIKey(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	if err != nil {
 		plugin.Logger(ctx).Error("aws_api_gateway_rest_api.getAPIKey", "service_client_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	id := d.KeyColumnQuals["id"].GetStringValue()

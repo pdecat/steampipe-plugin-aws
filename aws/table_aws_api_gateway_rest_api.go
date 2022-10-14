@@ -146,6 +146,10 @@ func listRestAPI(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		logger.Error("aws_api_gateway_rest_api.listRestAPI", "connection error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// Limiting the results
 	maxLimit := int32(500)
@@ -199,6 +203,10 @@ func getRestAPI(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 	if err != nil {
 		plugin.Logger(ctx).Error("aws_api_gateway_rest_api.getRestAPI", "connection_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	id := d.KeyColumnQuals["api_id"].GetStringValue()

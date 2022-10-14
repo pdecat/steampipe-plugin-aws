@@ -181,6 +181,10 @@ func listAPIGatewayStage(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	if err != nil {
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	params := &apigateway.GetStagesInput{
 		RestApiId: restAPI.Id,
@@ -212,6 +216,10 @@ func getAPIGatewayStage(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	if err != nil {
 		plugin.Logger(ctx).Error("aws_api_gateway_stage.getAPIGatewayStage", "service_client_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	stageName := d.KeyColumnQuals["name"].GetStringValue()
