@@ -85,6 +85,10 @@ func listAppConfigApplication(ctx context.Context, d *plugin.QueryData, _ *plugi
 		logger.Error("aws_appconfig_application.listAppConfigApplication", "service_creation_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	// Limiting the results
 	maxLimit := int32(50)
@@ -136,6 +140,10 @@ func getAppConfigApplication(ctx context.Context, d *plugin.QueryData, _ *plugin
 		logger.Error("aws_appconfig_application.getAppConfigApplication", "service_creation_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	id := d.KeyColumnQuals["id"].GetStringValue()
 	params := &appconfig.GetApplicationInput{
@@ -168,6 +176,10 @@ func getAppConfigTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	if err != nil {
 		logger.Error("aws_appconfig_application.getAppConfigTags", "service_creation_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	arn := getArnFormat(ctx, d, h)

@@ -77,6 +77,7 @@ import (
 	acmEndpoint "github.com/aws/aws-sdk-go/service/acm"
 	apigatewayEndpoint "github.com/aws/aws-sdk-go/service/apigateway"
 	apigatewayv2Endpoint "github.com/aws/aws-sdk-go/service/apigatewayv2"
+	configserviceEndpoint "github.com/aws/aws-sdk-go/service/configservice"
 	fsxEndpoint "github.com/aws/aws-sdk-go/service/fsx"
 	lambdaEndpoint "github.com/aws/aws-sdk-go/service/lambda"
 )
@@ -147,9 +148,12 @@ func APIGatewayV2Client(ctx context.Context, d *plugin.QueryData) (*apigatewayv2
 }
 
 func ConfigClient(ctx context.Context, d *plugin.QueryData) (*configservice.Client, error) {
-	cfg, err := getClientForQueryRegion(ctx, d)
+	cfg, err := getClientForQuerySupportedRegion(ctx, d, configserviceEndpoint.EndpointsID)
 	if err != nil {
 		return nil, err
+	}
+	if cfg == nil {
+		return nil, nil
 	}
 	return configservice.NewFromConfig(*cfg), nil
 }
