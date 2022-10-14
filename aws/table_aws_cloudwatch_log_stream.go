@@ -115,6 +115,10 @@ func listCloudwatchLogStreams(ctx context.Context, d *plugin.QueryData, h *plugi
 		plugin.Logger(ctx).Error("aws_cloudwatch_log_stream.listCloudwatchLogStreams", "client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	maxItems := int32(50)
 
@@ -184,6 +188,10 @@ func getCloudwatchLogStream(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	if err != nil {
 		plugin.Logger(ctx).Trace("aws_cloudwatch_log_group.getCloudwatchLogStream", "client_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	params := &cloudwatchlogs.DescribeLogStreamsInput{

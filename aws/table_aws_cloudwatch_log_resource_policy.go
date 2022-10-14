@@ -63,6 +63,10 @@ func listCloudwatchLogResourcePolicies(ctx context.Context, d *plugin.QueryData,
 		plugin.Logger(ctx).Error("aws_cloudwatch_log_resource_policy.listCloudwatchLogResourcePolicies", "client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	maxItems := int32(50)
 

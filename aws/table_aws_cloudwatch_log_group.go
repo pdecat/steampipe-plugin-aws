@@ -100,6 +100,10 @@ func listCloudwatchLogGroups(ctx context.Context, d *plugin.QueryData, _ *plugin
 		plugin.Logger(ctx).Info("aws_cloudwatch_log_group.listCloudwatchLogGroups", "client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	maxItems := int32(50)
 
@@ -159,6 +163,10 @@ func getCloudwatchLogGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 		plugin.Logger(ctx).Info("aws_cloudwatch_log_group.getCloudwatchLogGroup", "client_error", err)
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	name := d.KeyColumnQuals["name"].GetStringValue()
 	if strings.TrimSpace(name) == "" {
@@ -198,6 +206,10 @@ func getLogGroupTagging(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	if err != nil {
 		plugin.Logger(ctx).Info("aws_cloudwatch_log_group.getLogGroupTagging", "client_error", err)
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	params := &cloudwatchlogs.ListTagsLogGroupInput{

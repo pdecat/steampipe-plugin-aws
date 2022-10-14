@@ -65,6 +65,10 @@ func listCloudwatchLogEvents(ctx context.Context, d *plugin.QueryData, _ *plugin
 	if err != nil {
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	equalQuals := d.KeyColumnQuals
 

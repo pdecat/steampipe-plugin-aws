@@ -106,6 +106,10 @@ func listCloudwatchLogMetricFilters(ctx context.Context, d *plugin.QueryData, _ 
 	if err != nil {
 		return nil, err
 	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
+	}
 
 	input := &cloudwatchlogs.DescribeMetricFiltersInput{
 		Limit: aws.Int64(50),
@@ -168,6 +172,10 @@ func getCloudwatchLogMetricFilter(ctx context.Context, d *plugin.QueryData, _ *p
 	svc, err := CloudWatchLogsService(ctx, d)
 	if err != nil {
 		return nil, err
+	}
+	if svc == nil {
+		// un-supported regions check
+		return nil, nil
 	}
 
 	params := &cloudwatchlogs.DescribeMetricFiltersInput{
