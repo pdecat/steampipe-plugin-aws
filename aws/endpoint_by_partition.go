@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	emb "github.com/turbot/steampipe-plugin-aws/internal/aws_endpoint_generator"
+	emb "github.com/pdecat/steampipe-plugin-aws/internal/aws_endpoint_generator"
 )
 
 // Partition represents an AWS partition in the JSON data.
