@@ -53,6 +53,10 @@ func tableAwsOrganizationsAccount(_ context.Context) *plugin.Table {
 		},
 		HydrateConfig: []plugin.HydrateConfig{
 			{
+				Func: getOrganizationsAccountParent,
+				Tags: map[string]string{"service": "organizations", "action": "ListParents"},
+			},
+			{
 				Func: getOrganizationsAccountTags,
 				Tags: map[string]string{"service": "organizations", "action": "ListTagsForResource"},
 			},
@@ -73,6 +77,8 @@ func tableAwsOrganizationsAccount(_ context.Context) *plugin.Table {
 				Name:        "parent_id",
 				Description: "The unique identifier (ID) for the parent root or organization unit (OU) whose accounts you want to list.",
 				Type:        proto.ColumnType_STRING,
+				Hydrate:     getOrganizationsAccountParent,
+				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "arn",
@@ -244,24 +250,30 @@ func getOrganizationsAccount(ctx context.Context, d *plugin.QueryData, _ *plugin
 		return nil, err
 	}
 
-	// The "parent_id" column value will not be populated by the GET API call because its response does not include parent ID information.
-	// We can populate this value by making a separate hydrated function.
-	// However, to avoid unnecessary API calls for all rows.
-	// If our LIST API call is executed, it will correctly populate the parent_id column value.
-	// In the case of a GET API call, the Parent ID will not be available. Therefore, we make an additional API call to populate the parent_id column value when only the GET configuration is used.
-	parent, err := getParentForAccount(ctx, svc, accountId)
+	return OrgAccount{*op.Account, nil}, nil
+}
+
+func getOrganizationsAccountParent(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	account := h.Item.(OrgAccount)
+
+	// If the parent ID is already populated (e.g., from the list function), return it directly.
+	if account.ParentId != nil {
+		return account.ParentId, nil
+	}
+
+	accountId := *account.Id
+
+	// Get Client
+	svc, err := OrganizationClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("aws_organizations_account.getParentForAccount", "api_error", err)
+		plugin.Logger(ctx).Error("aws_organizations_account.getOrganizationsAccountParent", "client_error", err)
 		return nil, err
 	}
 
-	return OrgAccount{*op.Account, parent}, nil
-}
-
-func getParentForAccount(ctx context.Context, client *organizations.Client, accountId string) (*string, error) {
 	// Pagination is not needed here because an account will always have a single parent.
-	parent, err := client.ListParents(ctx, &organizations.ListParentsInput{ChildId: &accountId})
+	parent, err := svc.ListParents(ctx, &organizations.ListParentsInput{ChildId: &accountId})
 	if err != nil {
+		plugin.Logger(ctx).Error("aws_organizations_account.getOrganizationsAccountParent", "api_error", err)
 		return nil, err
 	}
 	if len(parent.Parents) > 0 {
