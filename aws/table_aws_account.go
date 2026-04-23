@@ -25,11 +25,22 @@ func tableAwsAccount(ctx context.Context) *plugin.Table {
 		},
 		HydrateConfig: []plugin.HydrateConfig{
 			{
+				Func: getAccountName,
+				Tags: map[string]string{"service": "organizations", "action": "DescribeAccount"},
+			},
+			{
 				Func: getOrganizationDetails,
 				Tags: map[string]string{"service": "organizations", "action": "DescribeOrganization"},
 			},
 		},
 		Columns: awsGlobalRegionColumns([]*plugin.Column{
+			{
+				Name:        "name",
+				Description: "The friendly name of the account, as set in AWS Organizations.",
+				Type:        proto.ColumnType_STRING,
+				Hydrate:     getAccountName,
+				Transform:   transform.FromValue(),
+			},
 			{
 				Name:        "account_aliases",
 				Description: "A list of aliases associated with the account, if applicable.",
@@ -176,6 +187,38 @@ func getOrganizationDetails(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	}
 
 	return op, nil
+}
+
+func getAccountName(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	accountInfo := h.Item.(*accountData)
+	accountId := accountInfo.commonColumnData.AccountId
+
+	// Get Client
+	svc, err := OrganizationClient(ctx, d)
+	if err != nil {
+		plugin.Logger(ctx).Error("aws_account.getAccountName", "client_error", err)
+		return nil, err
+	}
+
+	op, err := svc.DescribeAccount(ctx, &organizations.DescribeAccountInput{
+		AccountId: &accountId,
+	})
+	if err != nil {
+		var ae smithy.APIError
+		if errors.As(err, &ae) {
+			if ae.ErrorCode() == "AWSOrganizationsNotInUseException" || ae.ErrorCode() == "AccountNotFoundException" || ae.ErrorCode() == "AccessDeniedException" {
+				return nil, nil
+			}
+		}
+		plugin.Logger(ctx).Error("aws_account.getAccountName", "api_error", err)
+		return nil, err
+	}
+
+	if op.Account != nil {
+		return op.Account.Name, nil
+	}
+
+	return nil, nil
 }
 
 //// Transform Functions
