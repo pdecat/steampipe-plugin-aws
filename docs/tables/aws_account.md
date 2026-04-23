@@ -20,6 +20,7 @@ Discover the segments that are associated with your AWS account, including detai
 
 ```sql+postgres
 select
+  name,
   alias,
   arn,
   organization_id,
@@ -32,6 +33,7 @@ from
 
 ```sql+sqlite
 select
+  name,
   alias.value as alias,
   arn,
   organization_id,
