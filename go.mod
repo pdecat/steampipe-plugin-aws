@@ -278,4 +278,4 @@ require (
 
 replace github.com/turbot/go-kit => github.com/pdecat/go-kit v1.3.1-dev1
 
-replace github.com/turbot/steampipe-plugin-sdk/v5 => github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev2
+replace github.com/turbot/steampipe-plugin-sdk/v5 => github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev3
