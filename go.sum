@@ -1305,8 +1305,8 @@ github.com/olekukonko/tablewriter v0.0.5 h1:P2Ga83D34wi1o9J6Wh1mRuqd4mF/x/lgBS7N
 github.com/olekukonko/tablewriter v0.0.5/go.mod h1:hPp6KlRPjbx+hW8ykQs1w3UBbZlj6HuIJcUGPhkA7kY=
 github.com/pdecat/go-kit v1.3.1-dev1 h1:CNa5f4sGPGRBn1MsxtgAEijSETDzJ46oiU3x+GbfPk0=
 github.com/pdecat/go-kit v1.3.1-dev1/go.mod h1:hW2nItIxNEYRQbwqsMKmEfyKiuvKZPnjuYso65b8DL4=
-github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev3 h1:Y8Dhj9PfugAes3R+A082DTq3H+13VWpGjqIEsy0qMF4=
-github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev3/go.mod h1:VHKUVPx29JEHXjuY9Kj/fdabceHdGQB1kaH4Dik/XY8=
+github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev4 h1:IS2lLLhz4EJjGviPRMFhnpEiq/tCa1LxUJ01geFMrpw=
+github.com/pdecat/steampipe-plugin-sdk/v5 v5.14.2-dev4/go.mod h1:VHKUVPx29JEHXjuY9Kj/fdabceHdGQB1kaH4Dik/XY8=
 github.com/phpdave11/gofpdf v1.4.2/go.mod h1:zpO6xFn9yxo3YLyMvW8HcKWVdbNqgIfOOp2dXMnm1mY=
 github.com/phpdave11/gofpdi v1.0.12/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=
 github.com/phpdave11/gofpdi v1.0.13/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=
