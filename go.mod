@@ -291,4 +291,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/turbot/steampipe-plugin-sdk/v6 => github.com/pdecat/steampipe-plugin-sdk/v6 v6.0.1-dev1
+replace github.com/turbot/steampipe-plugin-sdk/v6 => github.com/pdecat/steampipe-plugin-sdk/v6 v6.1.1-dev1
